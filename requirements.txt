@@ -1,0 +1,2 @@
+pdfplumber==0.11.10
+reportlab==5.0.1  # only for generating invented test statements

@@ -1,0 +1,138 @@
+<!DOCTYPE html>
+<!--
+{{LICENSES}}
+-->
+<html lang="en" data-build="{{BUILD_INFO}}">
+<head>
+<meta charset="utf-8">
+<meta http-equiv="Content-Security-Policy" content="{{CSP}}">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="referrer" content="no-referrer">
+<meta name="color-scheme" content="light dark">
+<title>FBAR Maximum Balance</title>
+<link rel="icon" href="data:,">
+<style>
+{{CSS}}
+</style>
+</head>
+<body>
+<div class="wrap">
+  <header>
+    <h1>Highest balance of your bank accounts, for the FBAR</h1>
+    <p class="sub">Add CIH or Attijariwafa monthly statements, or a BMCE transaction-history PDF. This page calculates each account’s highest balance during the year and converts it to US dollars. A BMCE history requires a dated balance before its result can be final.</p>
+  </header>
+
+  <section class="privacy" aria-label="Privacy">
+    <svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="4" y="10" width="16" height="11" rx="2"/><path d="M8 10V7a4 4 0 0 1 8 0v3"/></svg>
+    <p><strong>Your statements stay on this computer.</strong>
+    Everything happens inside this page, on your computer. Nothing is uploaded or sent anywhere, and this page is built so that it cannot connect to the internet at all. To be completely sure, you can turn off Wi-Fi before adding your statements.</p>
+  </section>
+
+  <div id="fatal" class="fatal" hidden role="alert"></div>
+
+  <section class="card" id="step-settings" aria-labelledby="h-step1">
+    <div class="step-head">
+      <div class="step-num" aria-hidden="true">1</div>
+      <div>
+        <h2 id="h-step1">Choose the year and the exchange rate</h2>
+        <p>The year you are reporting, and how many Moroccan dirhams make one US dollar.</p>
+      </div>
+    </div>
+    <div class="fields">
+      <div class="field">
+        <label for="year">Year</label>
+        <select id="year"></select>
+      </div>
+      <div class="field">
+        <label for="rate">Exchange rate: dirhams (MAD) for 1 US dollar</label>
+        <input type="text" id="rate" inputmode="decimal" autocomplete="off" spellcheck="false" placeholder="MAD per 1 USD">
+        <p class="hint" id="rate-explain">Use the U.S. Treasury &ldquo;Reporting Rates of Exchange&rdquo; rate for <strong>Morocco-Dirham</strong> on <strong>December&nbsp;31, <span class="year-label">2025</span></strong>. Source: <span class="source">fiscaldata.treasury.gov</span>, page &ldquo;Treasury Reporting Rates of Exchange&rdquo;. Your tax preparer can also give it to you.</p>
+        <p class="hint" id="rate-status" aria-live="polite"></p>
+      </div>
+    </div>
+  </section>
+
+  <section class="card" id="step-files" aria-labelledby="h-step2">
+    <div class="step-head">
+      <div class="step-num" aria-hidden="true">2</div>
+      <div>
+        <h2 id="h-step2">Add your statements</h2>
+        <p>All the monthly statements of the year, for all your accounts. You can add them all at once, or a few at a time.</p>
+      </div>
+    </div>
+    <div class="drop" id="drop">
+      <svg width="40" height="40" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M14 3H7a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h10a2 2 0 0 0 2-2V8z"/><path d="M14 3v5h5"/><path d="M12 18v-6"/><path d="M9.5 14.5 12 12l2.5 2.5"/></svg>
+      <p class="big">Drag your PDF statements here</p>
+      <p class="muted small">You can also drag a whole folder.</p>
+      <p class="or">or</p>
+      <label class="btn btn-primary" for="file-input">Choose files&hellip;</label>
+      <input type="file" id="file-input" class="visually-hidden" multiple accept=".pdf,application/pdf">
+    </div>
+    <p class="progress" id="progress" aria-live="polite"></p>
+    <div id="file-area" hidden>
+      <div class="files-head">
+        <h3 id="files-title">Your files</h3>
+        <button type="button" class="btn btn-secondary btn-small" id="clear-all">Remove all files</button>
+      </div>
+      <div id="file-list" aria-labelledby="files-title"></div>
+    </div>
+  </section>
+
+  <section class="card" id="step-results" aria-labelledby="h-step3">
+    <div class="step-head">
+      <div class="step-num" aria-hidden="true">3</div>
+      <div>
+        <h2 id="h-step3">Results</h2>
+        <p>The highest balance of each account during <span class="year-label">2025</span>.</p>
+      </div>
+    </div>
+    <div id="results" aria-live="polite"><p class="empty">Results will appear here once you add your statements.</p></div>
+  </section>
+
+  <section class="card downloads" id="downloads" aria-labelledby="h-downloads" hidden>
+    <h2 id="h-downloads">Keep a copy</h2>
+    <p class="muted">A one-page-per-account report with the numbers for the FBAR form, how they were found, and any problems. The detailed version adds every transaction of every statement, to check against your PDFs. It opens your browser&rsquo;s print window: to keep it as a file, choose <strong>&ldquo;Save as PDF&rdquo;</strong> as the printer (on Windows: &ldquo;Microsoft Print to PDF&rdquo;), or print it for your tax preparer.</p>
+    <div class="btn-row">
+      <button type="button" class="btn btn-primary" id="save-report">Save a report (PDF or paper)</button>
+      <button type="button" class="btn btn-secondary" id="save-report-detailed">Save a detailed report (with every transaction)</button>
+    </div>
+    <p class="muted spaced">Optional, for checking the details: spreadsheet files (CSV, open in Excel or Numbers) with every statement and every transaction, including the balance after each one.</p>
+    <div class="btn-row">
+      <button type="button" class="btn btn-secondary" id="dl-statements">Download the statements list (CSV)</button>
+      <button type="button" class="btn btn-secondary" id="dl-transactions">Download all transactions (CSV)</button>
+    </div>
+    <p class="hint">These files are saved on this computer only. They contain your account numbers and balances: keep them private.</p>
+  </section>
+
+  <section class="card guide" aria-labelledby="h-guide">
+    <h2 id="h-guide">What to do with this number</h2>
+    <p class="deadline" id="deadline"></p>
+    <ul>
+      <li>The FBAR is <strong>FinCEN Form 114</strong>, filed online through <strong>BSA E-Filing</strong>. For each account, the &ldquo;number for the FBAR form&rdquo; shown above goes in <strong>Part&nbsp;II, item&nbsp;15, &ldquo;Maximum value of account during calendar year&rdquo;</strong>. One entry per account.</li>
+      <li>For the same account you will also need: item&nbsp;16, type of account: <strong>Bank</strong>; item&nbsp;17, the institution name shown in the report; item&nbsp;18, the account number <strong>without spaces</strong>; and items&nbsp;19 to&nbsp;23, the bank’s address. These details appear with each account’s results.</li>
+      <li>An FBAR is required if the maximums of <strong>all</strong> your foreign accounts, <strong>added together</strong>, are more than <strong>$10,000</strong>, even if each maximum happened on a different date. Once you are over that amount, <strong>every</strong> foreign account must be listed, even the small ones.</li>
+      <li>Using your statements this way is accepted: FinCEN allows the maximum value to be taken from periodic account statements, as long as they fairly reflect it. This page is more precise than month-end balances: it checks the balance after every transaction on every statement.</li>
+      <li>You may also need IRS Form 8938 with your tax return if your foreign assets are larger (thresholds start at $50,000); ask your tax preparer.</li>
+      <li>If you are unsure whether you need to file, or how to fill it in, check with your tax preparer.</li>
+    </ul>
+  </section>
+
+  <section class="card guide" aria-labelledby="h-help">
+    <h2 id="h-help">If a statement can&rsquo;t be read</h2>
+    <ul>
+      <li><strong>Use the PDF downloaded from your bank’s online banking</strong>. A scan or photo has no text this page can read.</li>
+      <li><strong>Password-protected PDF:</strong> open it with its password, choose Print, then &ldquo;Save as PDF&rdquo;, and add the new copy.</li>
+      <li><strong>Something else is wrong:</strong> next to the file, click <em>&ldquo;Create a safe diagnostic file&rdquo;</em>. It saves a small text file that shows only the <em>layout</em> of the statement: every letter is replaced by &ldquo;x&rdquo; and every digit by &ldquo;9&rdquo;, so it contains no names, no account numbers and no amounts. You can send that file to the person who made this tool so they can fix it.</li>
+    </ul>
+  </section>
+
+  <footer>
+    <p>FBAR maximum balance tool for CIH, Attijariwafa and BMCE &middot; works offline &middot; build {{BUILD_INFO}}</p>
+  </footer>
+</div>
+
+<section id="report" class="report" aria-hidden="true"></section>
+
+{{SCRIPTS}}
+</body>
+</html>

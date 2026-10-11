@@ -1,0 +1,19 @@
+node_modules/
+.venv/
+dist/*.tmp
+__pycache__/
+*.pyc
+.DS_Store
+.env
+.env.*
+results/
+fbar-results/
+fbar-samples/
+
+# safety net: never commit bank statements or outputs
+*.[pP][dD][fF]
+*.[cC][sS][vV]
+layout.txt
+
+# local deploy script (server details, not for the public repo)
+deploy-z1labs.sh

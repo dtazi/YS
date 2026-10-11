@@ -1,0 +1,20 @@
+{
+  "name": "cih-statement-parser",
+  "version": "1.0.0",
+  "description": "Reads CIH Bank \"Relev\u00e9 de compte bancaire\" PDFs **on your own computer** (nothing is sent anywhere), rebuilds the balance after every transaction, and reports the highest balance of each account for the year.",
+  "scripts": {
+    "test": "node tests/run-js-tests.mjs && node tests/test-other-banks.mjs",
+    "test:python": ".venv/bin/python tests/test_cih_layout.py && .venv/bin/python -I tools/test_safe_inspect.py",
+    "build": "node build.mjs",
+    "test:e2e": "node tests/e2e.mjs"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "dependencies": {
+    "pdfjs-dist": "^3.11.174"
+  },
+  "devDependencies": {
+    "puppeteer-core": "^25.13.0"
+  }
+}

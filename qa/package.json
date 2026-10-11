@@ -1,0 +1,13 @@
+{
+  "name": "cih-fbar-qa",
+  "version": "1.0.0",
+  "private": true,
+  "description": "Cross-browser QA (Chromium, WebKit, Firefox) for dist/FBAR-Max-Balance.html, run from file://",
+  "type": "module",
+  "scripts": {
+    "test": "node run.mjs"
+  },
+  "devDependencies": {
+    "playwright": "^1.64.0"
+  }
+}
